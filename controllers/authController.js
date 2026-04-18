@@ -4,58 +4,57 @@ const User = require("../models/User");
 
 // SIGNUP
 const signupUser = async (req, res) => {
-  const { name, email, password } = req.body;
-
   try {
-    const existingUser = await User.findOne({ email });
+    const { name, email, password } = req.body;
 
-    if (existingUser) {
+    const existing = await User.findOne({ email: email.trim() });
+    if (existing) {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    const user = new User({ name, email, password });
+    const user = new User({
+      name,
+      email: email.trim(),
+      password
+    });
+
     await user.save();
 
-    res.status(201).json({ message: "User created successfully" });
+    res.status(201).json({ message: "Signup successful" });
 
-  } catch (error) {
-    console.log("SIGNUP ERROR:", error);
-    res.status(500).json({ message: error.message });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
-
 // LOGIN
 const loginUser = async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  console.log("👉 LOGIN REQUEST:");
-  console.log("EMAIL:", `"${email}"`);
-  console.log("PASSWORD:", `"${password}"`);
+    const user = await User.findOne({ email: email.trim() });
 
-  const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
 
-  console.log("👉 USER FOUND:", user ? "YES" : "NO");
+    const match = await bcrypt.compare(password, user.password);
 
-  if (!user) {
-    return res.status(400).json({ message: "Invalid credentials (user not found)" });
+    if (!match) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    const token = jwt.sign(
+      { id: user._id },
+      "secretkey",
+      { expiresIn: "1d" }
+    );
+
+    res.json({ token });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-
-  const isMatch = await bcrypt.compare(password, user.password);
-
-  console.log("👉 PASSWORD MATCH:", isMatch);
-
-  if (!isMatch) {
-    return res.status(400).json({ message: "Invalid credentials (password mismatch)" });
-  }
-
-  const token = jwt.sign(
-    { id: user._id },
-    process.env.JWT_SECRET || "secretkey",
-    { expiresIn: "1d" }
-  );
-
-  res.json({ token });
 };
 
 module.exports = { signupUser, loginUser };
