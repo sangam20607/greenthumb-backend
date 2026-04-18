@@ -27,35 +27,35 @@ const signupUser = async (req, res) => {
 
 // LOGIN
 const loginUser = async (req, res) => {
-    console.log("🔥 LOGIN HIT");
-    console.log("BODY:", req.body);
   const { email, password } = req.body;
 
-  try {
-    const user = await User.findOne({ email });
+  console.log("👉 LOGIN REQUEST:");
+  console.log("EMAIL:", `"${email}"`);
+  console.log("PASSWORD:", `"${password}"`);
 
-    if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
+  const user = await User.findOne({ email });
 
-    const isMatch = await bcrypt.compare(password, user.password);
+  console.log("👉 USER FOUND:", user ? "YES" : "NO");
 
-    if (!isMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
-
-    const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET || "secretkey",
-      { expiresIn: "1d" }
-    );
-
-    res.json({ token });
-
-  } catch (error) {
-    console.log("LOGIN ERROR:", error);
-    res.status(500).json({ message: error.message });
+  if (!user) {
+    return res.status(400).json({ message: "Invalid credentials (user not found)" });
   }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  console.log("👉 PASSWORD MATCH:", isMatch);
+
+  if (!isMatch) {
+    return res.status(400).json({ message: "Invalid credentials (password mismatch)" });
+  }
+
+  const token = jwt.sign(
+    { id: user._id },
+    process.env.JWT_SECRET || "secretkey",
+    { expiresIn: "1d" }
+  );
+
+  res.json({ token });
 };
 
 module.exports = { signupUser, loginUser };
