@@ -26,12 +26,19 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+userSchema.pre("save", function (next) {
+  const user = this;
 
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
+  if (!user.isModified("password")) return next();
+
+  bcrypt.hash(user.password, 10)
+    .then((hash) => {
+      user.password = hash;
+      next();
+    })
+    .catch((err) => next(err));
 });
+
 
 
 module.exports = mongoose.model("User", userSchema);
