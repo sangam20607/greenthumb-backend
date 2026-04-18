@@ -9,8 +9,8 @@ const {
 
 const auth = require("../middleware/authMiddleware"); 
 
-router.get("/", auth, getPlants);
-router.post("/", auth, createPlant);
-router.delete("/:id", auth, deletePlant);
+router.get("/", authMiddleware, getPlants);
+router.post("/", authMiddleware, createPlant);
+router.delete("/:id", authMiddleware, deletePlant);
 
 module.exports = router;

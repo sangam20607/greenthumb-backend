@@ -4,24 +4,32 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
+const plantRoutes = require("./routes/plantRoutes");
 
 dotenv.config();
 connectDB();
 
 const app = express();
 
-app.use(cors());
+// middleware
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
 app.use(express.json());
 
 // routes
 app.use("/api/auth", authRoutes);
+app.use("/api/plants", plantRoutes);
 
 // test route
 app.get("/", (req, res) => {
-  res.send("GreenThumb API Running 🌿");
+  res.send("🌿 GreenThumb API Running");
 });
 
-// IMPORTANT: NO "*" routes anywhere
+// IMPORTANT: no wildcard routes like "*"
 
 const PORT = process.env.PORT || 5000;
 
