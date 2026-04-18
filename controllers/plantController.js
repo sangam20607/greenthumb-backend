@@ -3,10 +3,11 @@ const Plant = require("../models/Plant");
 // GET all plants
 const getPlants = async (req, res) => {
   try {
-    const plants = await Plant.find({ userId: req.user.id });
+    const plants = await Plant.find(); // REMOVE user filter
+
     res.json(plants);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
