@@ -3,7 +3,7 @@ const Plant = require("../models/Plant");
 // GET all plants
 const getPlants = async (req, res) => {
   try {
-    const plants = await Plant.find({ userId: req.userId });
+    const plants = await Plant.find({ userId: req.user.id });
     res.json(plants);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -15,7 +15,7 @@ const createPlant = async (req, res) => {
   try {
     const plant = new Plant({
   ...req.body,
-  userId: req.userId   
+  userId: req.user.id   
 });
     const savedPlant = await plant.save();
     res.status(201).json(savedPlant);
@@ -28,7 +28,7 @@ const deletePlant = async (req, res) => {
   try {
     const plant = await Plant.findOneAndDelete({
       _id: req.params.id,
-      userId: req.userId   // 🔐 ensures user deletes only their own plant
+      userId: req.user.id   // 🔐 ensures user deletes only their own plant
     });
 
     if (!plant) {
