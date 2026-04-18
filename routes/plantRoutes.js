@@ -7,7 +7,7 @@ const {
   deletePlant
 } = require("../controllers/plantController");
 
-const auth = require("../middleware/authMiddleware"); 
+const authMiddleware = require("../middleware/authMiddleware"); // ✅ FIX HERE
 
 router.get("/", authMiddleware, getPlants);
 router.post("/", authMiddleware, createPlant);
