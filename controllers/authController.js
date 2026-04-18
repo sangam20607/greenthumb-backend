@@ -48,14 +48,13 @@ const signupUser = async (req, res) => {
 
     await user.save();
 
-    res.status(201).json({ message: "User created successfully" });
+    return res.status(201).json({ message: "User created successfully" });
 
   } catch (error) {
-    console.log("SIGNUP ERROR:", error); 
-    res.status(500).json({ message: error.message }); 
+    console.log("SIGNUP ERROR:", error);
+    return res.status(500).json({ message: error.message });
   }
 };
-
 
 // export BOTH functions
 module.exports = { loginUser, signupUser };
