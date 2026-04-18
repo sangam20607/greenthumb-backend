@@ -7,8 +7,10 @@ const {
   deletePlant
 } = require("../controllers/plantController");
 
-router.get("/", getPlants);
-router.post("/", createPlant);
-router.delete("/:id", deletePlant);
+const auth = require("../middleware/authMiddleware"); 
+
+router.get("/", auth, getPlants);
+router.post("/", auth, createPlant);
+router.delete("/:id", auth, deletePlant);
 
 module.exports = router;

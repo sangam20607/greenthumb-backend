@@ -9,6 +9,10 @@ const plantSchema = new mongoose.Schema(
     waterFrequency: String,
     sunlight: String,
     notes: String,
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
+    }
   },
   { timestamps: true }
 );
